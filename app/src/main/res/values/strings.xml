@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ScriptBridge</string>
+    <string name="notification_channel_name">Bridge Server</string>
+    <string name="notification_channel_desc">Keeps the local HTTP and WebSocket script server active in the background.</string>
+    <string name="action_start_server">Start Server</string>
+    <string name="action_stop_server">Stop Server</string>
+    <string name="action_pick_lua">Load .lua File</string>
+    <string name="action_reload_lua">Reload</string>
+    <string name="action_push_script">Push to Clients</string>
+    <string name="action_refresh_ip">Refresh IP</string>
+    <string name="action_clear_logs">Clear</string>
+    <string name="action_copy">Copy</string>
+    <string name="label_tailscale_funnel">Tailscale Funnel URL</string>
+    <string name="hint_tailscale_funnel">https://node.tailnet-xxxx.ts.net</string>
+    <string name="tab_console">Console</string>
+    <string name="tab_script">Script</string>
+    <string name="tab_guide">Connect</string>
+</resources>

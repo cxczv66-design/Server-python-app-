@@ -1,0 +1,6 @@
+{
+  "name": "ScriptBridge",
+  "description": "Background HTTP and WebSocket server with Tailscale IP detection and local Lua script hosting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
