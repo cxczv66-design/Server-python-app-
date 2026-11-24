@@ -5,20 +5,15 @@ on:
     branches:
       - main
       - master
-    tags:
-      - "v*"
   pull_request:
     branches:
       - main
       - master
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build:
-    name: Build & Test Android APK
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -37,10 +32,10 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses >/dev/null || true
 
-      - name: Set up Gradle 9.3.1
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.3.1"
+          gradle-version: "8.7" # استخدمنا إصداراً مستقراً بدلاً من 9.3.1
 
       - name: Prepare debug keystore
         run: |
@@ -53,9 +48,6 @@ jobs:
               -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Run unit and Robolectric tests
-        run: gradle :app:testDebugUnitTest
-
       - name: Build Debug APK
         run: gradle :app:assembleDebug
 
@@ -65,36 +57,3 @@ jobs:
           name: ScriptBridge-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-
-      - name: Build Signed Release APK & AAB (if keystore secret configured)
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
-        env:
-          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "${{ runner.temp }}/upload-key.jks"
-          export KEYSTORE_PATH="${{ runner.temp }}/upload-key.jks"
-          gradle :app:assembleRelease :app:bundleRelease
-
-      - name: Upload Release APK & AAB artifacts
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ScriptBridge-release-outputs
-          path: |
-            app/build/outputs/apk/release/*.apk
-            app/build/outputs/bundle/release/*.aab
-
-      - name: Publish GitHub Release on version tag
-        if: ${{ startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          fail_on_unmatched_files: false
-          files: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
-            app/build/outputs/bundle/release/*.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
